@@ -5,8 +5,9 @@ import MySQLdb
 import time
 import heweatherapi
 import json
+from utils import consts
 
-UPDATE_INTERVAL = 180;
+UPDATE_INTERVAL = 60;
 
 conn = MySQLdb.connect(
 	host = 'localhost',
@@ -26,9 +27,12 @@ while (1):
 	location = heweatherapi.getLocation()
 	resultS = heweatherapi.fetchWeather(location)
 	resultD = json.loads(resultS)
-	if(resultD['HeWeather5'][0]['status'] == 'ok'):
+	status_code = resultD['HeWeather5'][0]['status']
+	if(consts.HEWEAPI.STATUS_INFO.has_key(status_code)):
 		temp = resultD['HeWeather5'][0]['now']['tmp']
 		humi = resultD['HeWeather5'][0]['now']['hum']
+	else:
+		print consts.HEWEAPI.ERROR_INFO[status_code].decode('UTF-8')
 	for node_key in node_dict.keys():
 		hops_val=[]
 		hops_val.append(node_key)
