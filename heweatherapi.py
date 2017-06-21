@@ -24,12 +24,17 @@ def fetchWeather(location):
 	
 if __name__ == '__main__':
 	location = getLocation()
-	resultS = fetchWeather(location)
-	resultD = json.loads(resultS)
-	status_code = resultD['HeWeather5'][0]['status']
-	if(consts.HEWEAPI.STATUS_INFO.has_key(status_code)):
-		temp = resultD['HeWeather5'][0]['now']['tmp']
-		humi = resultD['HeWeather5'][0]['now']['hum']
+	try:
+		resultS = fetchWeather(location)
+	except Exception,e:#urllib2.HTTPError,urllib2.URLError...
+		print str(e)
+		continue
 	else:
-		print consts.HEWEAPI.ERROR_INFO[status_code].decode('UTF-8')		
-	print temp,humi
+		resultD = json.loads(resultS)
+		status_code = resultD['HeWeather5'][0]['status']
+		if(consts.HEWEAPI.STATUS_INFO.has_key(status_code)):
+			temp = resultD['HeWeather5'][0]['now']['tmp']
+			humi = resultD['HeWeather5'][0]['now']['hum']
+			print temp,humi
+		else:
+			print consts.HEWEAPI.ERROR_INFO[status_code].decode('UTF-8')		
